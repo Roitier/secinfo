@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hardening de Servidores Linux - Prof. Roitier Campos Gonçalves</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #0284c7;
+            --primary-hover: #0369a1;
+            --primary-light: #e0f2fe;
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --code-bg: #0f172a;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --primary: #38bdf8;
+                --primary-hover: #0284c7;
+                --primary-light: #0c4a6e;
+                --bg-main: #0f172a;
+                --bg-card: #1e293b;
+                --text-main: #f8fafc;
+                --text-muted: #94a3b8;
+                --border-color: #334155;
+                --code-bg: #020617;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 24px;
+        }
+
+        .content-body {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        section {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+
+        h2 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 20px 0 10px 0;
+            color: var(--text-main);
+        }
+
+        p, li {
+            font-size: 0.95rem;
+            color: var(--text-main);
+            margin-bottom: 12px;
+        }
+
+        ul {
+            margin-left: 20px;
+            margin-bottom: 16px;
+        }
+
+        /* Directives Cards */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin: 16px 0;
+        }
+
+        .directive-card {
+            background-color: var(--bg-main);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .directive-card h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .directive-card p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            margin: 16px 0;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+
+        th {
+            background-color: rgba(0, 0, 0, 0.03);
+            font-weight: 700;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:last-child td { border-bottom: none; }
+
+        /* Terminal Window Mockup */
+        .terminal-window {
+            background-color: var(--code-bg);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            margin: 16px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .terminal-header {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 8px 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .dot-red { background-color: #ef4444; }
+        .dot-yellow { background-color: #f59e0b; }
+        .dot-green { background-color: #10b981; }
+
+        .terminal-title {
+            color: #94a3b8;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
+            margin-left: 6px;
+        }
+
+        pre {
+            font-family: 'Fira Code', monospace;
+            padding: 16px;
+            color: #f8fafc;
+            font-size: 0.88rem;
+            overflow-x: auto;
+            line-height: 1.5;
+        }
+
+        .t-prompt { color: #10b981; font-weight: 600; }
+        .t-cmd { color: #f8fafc; }
+        .t-comment { color: #64748b; font-style: italic; }
+        .t-alert { color: #f43f5e; font-weight: 600; }
+        .t-ok { color: #34d399; font-weight: 600; }
+
+        /* Exercise Items */
+        .exercise-item {
+            background-color: var(--bg-main);
+            border-left: 4px solid var(--primary);
+            border-top: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 14px 18px;
+            margin-bottom: 12px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .exercise-item strong {
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="content-body">
+
+        <!-- 1. Fundação e Boas Práticas -->
+        <section id="fundamentos">
+            <h2><i class="fa-solid fa-shield-halved"></i> 1. Fundamentos e Boas Práticas de Hardening</h2>
+            <p>Hardening de Servidores é o conjunto de ações estruturadas para blindar o Sistema Operacional, reduzindo a superfície de ataque em serviços internos e externos (Web, Bancos de Dados, Arquivos).</p>
+            
+            <div class="grid-3">
+                <div class="directive-card">
+                    <h4><i class="fa-solid fa-user-lock"></i> Mínimo Privilégio</h4>
+                    <p>Acesso root direto bloqueado. Obriga a identificação e autenticação inicial por um usuário comum.</p>
+                </div>
+                <div class="directive-card">
+                    <h4><i class="fa-solid fa-eye-slash"></i> Superfície Reduzida</h4>
+                    <p>Desativação de portas inativas, daemons sem uso e encerramento de serviços expostos à rede.</p>
+                </div>
+                <div class="directive-card">
+                    <h4><i class="fa-solid fa-trash-can"></i> Remoção de Clientes</h4>
+                    <p>Desinstalação de utilitários desnecessários no servidor, tais como <code>telnet</code>, <code>ftpd</code> e <code>rshd</code>.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Runlevels e Controle de Daemons -->
+        <section id="runlevels">
+            <h2><i class="fa-solid fa-sliders"></i> 2. Arquitetura Linux: Runlevels e Daemons</h2>
+            <p>O <em>runlevel</em> determina o nível de inicialização e quais serviços/daemons serão carregados pelo sistema.</p>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Runlevel</th>
+                            <th>Finalidade</th>
+                            <th>Ação do Sistema</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Runlevel 0</strong></td>
+                            <td>Halt / Desligamento</td>
+                            <td>Desliga o sistema</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Runlevel 1</strong></td>
+                            <td>Modo Monousuário</td>
+                            <td>Manutenção do sistema</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Runlevel 2 - 5</strong></td>
+                            <td>Modo Multiusuário</td>
+                            <td>Operação regular em modo Texto ou GUI</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Runlevel 6</strong></td>
+                            <td>Reboot</td>
+                            <td>Reinicia o sistema</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Gerenciamento Manual de Daemons</h3>
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <span class="dot dot-red"></span>
+                    <span class="dot dot-yellow"></span>
+                    <span class="dot dot-green"></span>
+                    <span class="terminal-title">bash - Controle via init.d e rcconf</span>
+                </div>
+                <pre><span class="t-comment"># Parar um serviço via script de inicialização</span>
+<span class="t-prompt">root@servidor:~#</span> <span class="t-cmd">/etc/init.d/apache2 stop</span>
+[ ok ] Stopping apache2 (via systemctl): apache2.service.
+
+<span class="t-comment"># Verificar status de serviço</span>
+<span class="t-prompt">root@servidor:~#</span> <span class="t-cmd">/etc/init.d/ssh status</span>
+[ ok ] sshd is running.
+
+<span class="t-comment"># Interface gráfica em terminal para gerenciamento do boot</span>
+<span class="t-prompt">root@servidor:~#</span> <span class="t-cmd">rcconf</span></pre>
+            </div>
+        </section>
+
+        <!-- 3. Bootloader e GRUB -->
+        <section id="grub">
+            <h2><i class="fa-solid fa-key"></i> 3. Vulnerabilidade e Blindagem do GRUB</h2>
+            <p>A falta de senha no menu do GRUB permite que invasores físicos modifiquem os parâmetros de boot e obtenham acesso root completo injetando <code>init=/bin/bash</code>.</p>
+
+            <h3>Procedimento de Proteção com Hash PBKDF2:</h3>
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <span class="dot dot-red"></span>
+                    <span class="dot dot-yellow"></span>
+                    <span class="dot dot-green"></span>
+                    <span class="terminal-title">bash - Criptografia de Senha no GRUB</span>
+                </div>
+                <pre><span class="t-comment"># 1. Gerar o hash da senha</span>
+<span class="t-prompt">root@servidor:~#</span> <span class="t-cmd">grub-mkpassword-pbkdf2</span>
+PBKDF2 hash: grub.pbkdf2.sha512.100000.A8F...
+
+<span class="t-comment"># 2. Inserir o superusuário no arquivo /etc/grub.d/00_header</span>
+cat &lt;&lt; EOF
+set superusers="root"
+password_pbkdf2 root grub.pbkdf2.sha512.100000.A8F...
+EOF
+
+<span class="t-comment"># 3. Atualizar as configurações do GRUB</span>
+<span class="t-prompt">root@servidor:~#</span> <span class="t-cmd">update-grub</span>
+Succeeded. Edição do menu agora exige autenticação!</pre>
+            </div>
+        </section>
+
+        <!-- 4. Restrição de Consoles TTY -->
+        <section id="tty">
+            <h2><i class="fa-solid fa-terminal"></i> 4. Restrição de Terminais Virtuais (TTY)</h2>
+            <p>O arquivo <code>/etc/securetty</code> especifica em quais consoles o usuário <code>root</code> pode realizar login direto. A remoção de linhas contendo <code>tty</code> e <code>vc</code> impede o login root direto sem passar antes por um usuário comum, garantindo rastreabilidade no arquivo <code>/var/log/auth.log</code>.</p>
+
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <span class="dot dot-red"></span>
+                    <span class="dot dot-yellow"></span>
+                    <span class="dot dot-green"></span>
+                    <span class="terminal-title">/var/log/auth.log - Log de Auditoria</span>
+                </div>
+                <pre><span class="t-comment"># Tentativa bloqueada de login direto como root no terminal físico</span>
+<span class="t-alert">FAILED LOGIN 1 ON tty1 FOR root, LOGIN REFUSED</span>
+
+<span class="t-comment"># Fluxo Seguro e Auditável</span>
+ACCEPTED password for aluno from 192.168.1.50
+<span class="t-prompt">aluno@servidor:~$</span> <span class="t-cmd">su</span>
+Password: 
+<span class="t-ok">pam_unix(su:session): session opened for user root by aluno</span></pre>
+            </div>
+        </section>
+
+        <!-- 5. Systemd e Agendamento no Crontab -->
+        <section id="automacao">
+            <h2><i class="fa-solid fa-clock"></i> 5. Systemd e Agendamentos no Crontab</h2>
+            
+            <h3>Desativando Reboot por CTRL+ALT+DEL</h3>
+            <p>Reduz o risco de reinicializações físicas maliciosas ou acidentais via Systemd:</p>
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <span class="dot dot-red"></span>
+                    <span class="dot dot-yellow"></span>
+                    <span class="dot dot-green"></span>
+                    <span class="terminal-title">bash - Desabilitando ctrl-alt-del.target</span>
+                </div>
+                <pre><span class="t-prompt">root@servidor:~#</span> <span class="t-cmd">rm /lib/systemd/system/ctrl-alt-del.target</span>
+<span class="t-prompt">root@servidor:~#</span> <span class="t-cmd">ln -s /dev/null /lib/systemd/system/ctrl-alt-del.target</span>
+<span class="t-prompt">root@servidor:~#</span> <span class="t-cmd">systemctl daemon-reload</span>
+<span class="t-ok">Teclas CTRL+ALT+DEL desativadas com sucesso!</span></pre>
+            </div>
+
+            <h3>Sintaxe de Agendamento no `/etc/crontab`</h3>
+            <p>O <code>cron</code> executa comandos agendados com base na estrutura de tempo do sistema:</p>
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <span class="dot dot-red"></span>
+                    <span class="dot dot-yellow"></span>
+                    <span class="dot dot-green"></span>
+                    <span class="terminal-title">/etc/crontab - Estrutura de Agendamento</span>
+                </div>
+                <pre><span class="t-comment"># m h dom mon dow user command</span>
+<span class="t-cmd">30 23 * * 5 root /backup.sh</span>
+
+<span class="t-comment"># Legenda de Execução:</span>
+<span class="t-comment"># Minuto: 30 | Hora: 23 (23:30)</span>
+<span class="t-comment"># dom/mon (*): Qualquer dia do mês / qualquer mês</span>
+<span class="t-comment"># dow (5): Sexta-feira (0-7, onde 0 e 7 representam Domingo)</span></pre>
+            </div>
+        </section>
+
+        <!-- 6. Varredura e Encerramento de Portas -->
+        <section id="nmap">
+            <h2><i class="fa-solid fa-network-wired"></i> 6. Varredura de Portas e Finalização de Processos</h2>
+            <p>Mapeamento de portas abertas com <code>nmap</code> e localização do PID associado via <code>fuser</code> para encerramento de processos não autorizados.</p>
+
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <span class="dot dot-red"></span>
+                    <span class="dot dot-yellow"></span>
+                    <span class="dot dot-green"></span>
+                    <span class="terminal-title">bash - Mapeamento e Encerramento de Porta</span>
+                </div>
+                <pre><span class="t-comment"># Passo 1: Varredura de portas locais</span>
+<span class="t-prompt">root@servidor:~#</span> <span class="t-cmd">nmap 127.0.0.1</span>
+PORT     STATE SERVICE
+22/tcp   open  ssh
+80/tcp   open  http
+9050/tcp open  tor-socks
+
+<span class="t-comment"># Passo 2: Identificar o processo que abriu a porta suspeita</span>
+<span class="t-prompt">root@servidor:~#</span> <span class="t-cmd">fuser -v 9050/tcp</span>
+USER        PID ACCESS COMMAND
+9050/tcp:            debian-tor 1470 F.... tor
+
+<span class="t-comment"># Passo 3: Encerrar o processo imediatamente</span>
+<span class="t-prompt">root@servidor:~#</span> <span class="t-cmd">kill -9 1470</span>
+<span class="t-ok">Processo 1470 encerrado. Porta 9050 fechada!</span></pre>
+            </div>
+        </section>
+
+        <!-- 7. TCP Wrapper -->
+        <section id="tcpwrapper">
+            <h2><i class="fa-solid fa-filter"></i> 7. Filtro Host-Based com TCP Wrapper (`libwrap`)</h2>
+            <p>Funciona como uma camada intermediária entre a rede e o serviço, consultando as regras de ACL antes de entregar a conexão ao daemon.</p>
+
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <span class="dot dot-red"></span>
+                    <span class="dot dot-yellow"></span>
+                    <span class="dot dot-green"></span>
+                    <span class="terminal-title">bash - Suporte e Configuração de ACLs</span>
+                </div>
+                <pre><span class="t-comment"># Verificar suporte à libwrap no executável</span>
+<span class="t-prompt">root@servidor:~#</span> <span class="t-cmd">type -P sshd | xargs ldd | fgrep libwrap</span>
+libwrap.so.0 => /lib/x86_64-linux-gnu/libwrap.so.0
+
+<span class="t-comment"># 1. Bloquear tudo por padrão no arquivo /etc/hosts.deny</span>
+ALL: ALL
+
+<span class="t-comment"># 2. Configurar permissões de exceção no arquivo /etc/hosts.allow</span>
+sshd: 127.0.0.1 192.168.1.0/24
+in.tftpd: 192.168.1.10
+
+<span class="t-comment"># Regra com exceção explícita:</span>
+ALL: 192.168.1. EXCEPT sshd: 192.168.1.2</pre>
+            </div>
+        </section>
+
+        <!-- 8. Transferências Seguras com SCP -->
+        <section id="scp">
+            <h2><i class="fa-solid fa-file-arrow-up"></i> 8. Transferência Criptografada com SCP</h2>
+            <p>Utilização do utilitário <code>scp</code> (Secure Copy) para transferência de arquivos criptografados sobre SSH:</p>
+
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <span class="dot dot-red"></span>
+                    <span class="dot dot-yellow"></span>
+                    <span class="dot dot-green"></span>
+                    <span class="terminal-title">bash - Exemplos de Cópia Criptografada</span>
+                </div>
+                <pre><span class="t-comment"># Cópia para servidor remoto na porta padrão (22/tcp)</span>
+<span class="t-prompt">aluno@cliente:~$</span> <span class="t-cmd">scp relatorio.txt aluno@192.168.1.100:/home/aluno/</span>
+relatorio.txt 100% 4096 2.1MB/s 00:00
+
+<span class="t-comment"># Cópia informando porta customizada (-P)</span>
+<span class="t-prompt">aluno@cliente:~$</span> <span class="t-cmd">scp -P 2222 backup.tar.gz aluno@192.168.1.100:/var/backups/</span>
+backup.tar.gz 100% 18MB 12.4MB/s 00:01
+
+<span class="t-comment"># Cópia de arquivo remoto para a máquina local</span>
+<span class="t-prompt">aluno@cliente:~$</span> <span class="t-cmd">scp aluno@192.168.1.100:/var/log/syslog ./syslog_remoto.log</span></pre>
+            </div>
+        </section>
+
+        <!-- 9. Roteiro Prático no Docker -->
+        <section id="docker">
+            <h2><i class="fa-brands fa-docker"></i> 9. Laboratório Hands-On em Docker</h2>
+            <p>Construção e execução do ambiente interativo de testes:</p>
+
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <span class="dot dot-red"></span>
+                    <span class="dot dot-yellow"></span>
+                    <span class="dot dot-green"></span>
+                    <span class="terminal-title">Host & Contêiner Docker</span>
+                </div>
+                <pre><span class="t-comment"># 1. Construir a imagem no host</span>
+<span class="t-prompt">user@host:~$</span> <span class="t-cmd">docker build -t hardening-lab .</span>
+Successfully tagged hardening-lab:latest
+
+<span class="t-comment"># 2. Iniciar o contêiner interativo</span>
+<span class="t-prompt">user@host:~$</span> <span class="t-cmd">docker run -it --name servidor-lab hardening-lab /bin/bash</span>
+
+<span class="t-comment"># 3. Comandos de teste dentro do contêiner</span>
+<span class="t-prompt">root@servidor-lab:/#</span> <span class="t-cmd">nmap 127.0.0.1</span>
+<span class="t-prompt">root@servidor-lab:/#</span> <span class="t-cmd">type -P sshd | xargs ldd | fgrep libwrap</span>
+<span class="t-prompt">root@servidor-lab:/#</span> <span class="t-cmd">echo "sshd: 127.0.0.1" >> /etc/hosts.allow</span>
+<span class="t-prompt">root@servidor-lab:/#</span> <span class="t-cmd">which sshd</span></pre>
+            </div>
+        </section>
+
+        <!-- 10. Fixação e Avaliação -->
+        <section id="exercicios">
+            <h2><i class="fa-solid fa-clipboard-check"></i> 10. Fixação e Avaliação</h2>
+
+            <h3>Exercícios Práticos (Docker)</h3>
+            <div class="exercise-item">
+                <strong>1.</strong> Mapear as portas abertas no contêiner com <code>nmap 127.0.0.1</code>.
+            </div>
+            <div class="exercise-item">
+                <strong>2.</strong> Listar os scripts de agendamento automático presentes no diretório <code>/etc/cron.daily</code>.
+            </div>
+            <div class="exercise-item">
+                <strong>3.</strong> Configurar o bloqueio geral de serviços no arquivo <code>/etc/hosts.deny</code>.
+            </div>
+
+            <h3>Questões de Avaliação</h3>
+            <div class="exercise-item">
+                <strong>1.</strong> Explique a vulnerabilidade associada ao parâmetro <code>init=/bin/bash</code> na inicialização do GRUB.
+            </div>
+            <div class="exercise-item">
+                <strong>2.</strong> Diferencie o funcionamento e a ordem de avaliação dos arquivos <code>/etc/hosts.allow</code> e <code>/etc/hosts.deny</code>.
+            </div>
+            <div class="exercise-item">
+                <strong>3.</strong> Crie uma linha para o arquivo <code>/etc/crontab</code> que execute um backup diário às 03:00 como usuário <code>root</code>.
+            </div>
+        </section>
+
+    </div>
+
+</body>
+</html>

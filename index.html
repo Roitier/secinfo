@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prof. Roitier Campos - Materiais de Aula & Segurança de Redes</title>
+
+    <!-- Fontes externas do Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+
+    <!-- Ícones do Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #0284c7;
+            --primary-hover: #0369a1;
+            --primary-light: #e0f2fe;
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --header-bg: #ffffff;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --primary: #38bdf8;
+                --primary-hover: #0284c7;
+                --primary-light: #0c4a6e;
+                --bg-main: #0f172a;
+                --bg-card: #1e293b;
+                --text-main: #f8fafc;
+                --text-muted: #94a3b8;
+                --border-color: #334155;
+                --header-bg: #1e293b;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Bar Header */
+        header {
+            background-color: var(--header-bg);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+            border-radius: 4px;
+        }
+
+        nav a:hover {
+            color: var(--primary);
+        }
+
+        /* Hero Banner */
+        .hero {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #ffffff;
+            padding: 48px 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0284c7, #38bdf8);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin: 0 auto 14px auto;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero h1 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .hero p {
+            color: #94a3b8;
+            font-size: 1rem;
+            margin-bottom: 18px;
+            line-height: 1.5;
+        }
+
+        .hero-tags {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .hero-tag {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #e2e8f0;
+        }
+
+        /* Container do Conteúdo e Frame */
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 24px;
+            flex: 1;
+            width: 100%;
+        }
+
+        .section-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-main);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        /* Cards Grid */
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .course-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .course-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.08);
+            border-color: var(--primary);
+        }
+
+        .course-badge {
+            display: inline-block;
+            background-color: var(--primary-light);
+            color: var(--primary);
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .course-card h3 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .course-card p {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            margin-bottom: 16px;
+        }
+
+        .course-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid var(--border-color);
+            padding-top: 12px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .btn-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .disabled-card {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        /* Frame Viewer Container */
+        .frame-section {
+            margin-top: 20px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+        }
+
+        .frame-header {
+            background-color: var(--header-bg);
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .frame-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-main);
+        }
+
+        iframe {
+            width: 100%;
+            height: 750px;
+            border: none;
+            background-color: var(--bg-main);
+        }
+
+        footer {
+            background-color: var(--header-bg);
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 1.8rem; }
+            iframe { height: 500px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header / Navbar -->
+    <header>
+        <div class="header-container">
+            <a href="#" class="brand">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>Prof. Roitier Campos</span>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="#materiais">Materiais</a></li>
+                    <li><a href="#frame-aula">Visualizador</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Banner (Permanece Fixo no Topo) -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-avatar">RC</div>
+            <h1>Prof. Roitier Campos Gonçalves</h1>
+            <p>Repositório de aulas, apresentações e laboratórios práticos sobre Segurança de Redes e Hardening.</p>
+            <div class="hero-tags">
+                <span class="hero-tag"><i class="fa-solid fa-server"></i> Hardening de Servidores</span>
+                <span class="hero-tag"><i class="fa-brands fa-docker"></i> Docker Labs</span>
+                <span class="hero-tag"><i class="fa-solid fa-lock"></i> Segurança de Redes</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Conteúdo Principal -->
+    <main class="container">
+        <h2 id="materiais" class="section-title">
+            <i class="fa-solid fa-folder-open"></i>
+            Materiais de Aula
+        </h2>
+
+        <div class="courses-grid">
+            <!-- Link Direcionado para o Frame -->
+            <div class="course-card">
+                <div>
+                    <span class="course-badge">Guia Completo</span>
+                    <h3>Hardening de Servidores (Linux)</h3>
+                    <p>Guia interativo consolidando as Aulas 03 e 04.2 com teoria e práticas Docker.</p>
+                </div>
+                <div class="course-footer">
+                    <span><i class="fa-solid fa-window-maximize"></i> Abrir no Frame</span>
+                    <a href="hardening-linux.html" target="content-frame" class="btn-link">Abrir Aula <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <div class="course-card">
+                <div>
+                    <span class="course-badge">Apresentação</span>
+                    <h3>Slides de Hardening</h3>
+                    <p>Apresentação visual com mockups de terminal e comandos de fixação.</p>
+                </div>
+                <div class="course-footer">
+                    <span><i class="fa-solid fa-file-powerpoint"></i> Slides</span>
+                    <a href="slides_hardening_servidores.html" target="content-frame" class="btn-link">Visualizar <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <div class="course-card disabled-card">
+                <div>
+                    <span class="course-badge">Em Breve</span>
+                    <h3>Firewalls & IPTables</h3>
+                    <p>Filtragem de pacotes e regras perimetrais em Linux.</p>
+                </div>
+                <div class="course-footer">
+                    <span>Módulo 05</span>
+                    <span class="btn-link">Indisponível</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção do Frame de Exibição -->
+        <h2 id="frame-aula" class="section-title">
+            <i class="fa-solid fa-desktop"></i>
+            Visualizador de Conteúdo
+        </h2>
+        
+        <div class="frame-section">
+            <div class="frame-header">
+                <div class="frame-title">
+                    <i class="fa-solid fa-book-open"></i> Conteúdo Carregado
+                </div>
+            </div>
+            <!-- Frame onde o arquivo hardening-linux.html abre -->
+            <iframe name="content-frame" src="hardening-linux.html"></iframe>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; Prof. Roitier Campos Gonçalves. Todos os direitos reservados.</p>
+    </footer>
+
+</body>
+</html>
